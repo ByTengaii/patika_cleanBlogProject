@@ -19,7 +19,12 @@
             <h2 class="subheading"><%= post.detail %></h2>
             <span class="meta">Posted by
               <a href="#"> <%= post.dataCreated.toLocaleDateString() %> </span>
-          </div>
+                <div class="row mt-4 j">
+                  <a href="/posts/edit/<%= post._id %>" class="btn btn-primary ml-3"> UPDATE </a>
+                  <a href="/posts/<%= post._id %>?_method=DELETE" class="btn btn-danger ml-3">DELETE POST</a>
+                </div>
+                
+            </div>
         </div>
       </div>
     </div>
