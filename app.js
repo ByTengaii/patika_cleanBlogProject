@@ -1,8 +1,9 @@
 const ejs =  require('ejs');
 const express = require('express');
 const mongoose = require('mongoose');
-const Post = require('./models/Post.js');
-const methodOverride = require('method-override')
+const methodOverride = require('method-override');
+const pageController = require('./controller/pageController.js');
+const postController = require('./controller/postController.js');
 
 const app = express();
 const port = 3000;
@@ -23,51 +24,16 @@ connection.catch(err => {
     if (err) console.log(err);
 });
 
-app.get('/', async (req, res) => {
-    const posts = await Post.find({}).sort('-dataCreated').exec();
-    res.render('index',{
-        posts
-    });
-});
+//* Routes
+app.get('/', pageController.getIndex);
+app.get('/about', pageController.getAbout);
+app.get('/add_post', pageController.getAddPost);
+app.get('/posts/:id', postController.getPostPage);
+app.get('/posts/edit/:id', postController.editPost);
 
-app.get('/about', (req, res) => {
-    res.render('about');
-});
-
-app.get('/add_post', (req, res) => {
-    res.render('add_post');
-});
-
-app.get('/posts/:id', async (req,res) => {
-    const post = await Post.findById(req.params.id).exec();
-    res.render('post',{
-        post
-    });
-})
-app.post('/posts', async (req,res) => {
-    await Post.create(req.body);
-    res.redirect('/');
-});
-
-app.get('/posts/edit/:id', async (req,res) => {
-    const post = await Post.findById(req.params.id).exec();
-    res.render('editPost',{
-        post
-    });
-});
-
-app.put('/posts/:id', async (req,res) => {
-    const post = await Post.findById(req.params.id);
-    post.title = req.body.title;
-    post.detail = req.body.detail;
-    post.save();
-    res.redirect(`/posts/${req.params.id}`);    
-});
-
-app.delete('/posts/:id', async (req, res) => {
-    await Post.findByIdAndRemove(req.params.id);
-    res.redirect('/');
-})
+app.post('/posts', postController.createPost);
+app.put('/posts/:id', postController.updatePost);
+app.delete('/posts/:id',postController.deletePost)
 
 app.listen(port,() => {
     console.log(`Server start at ${port}`);
